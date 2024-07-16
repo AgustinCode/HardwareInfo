@@ -1,17 +1,17 @@
-#include "Mboard.h"
-#include <windows.h>
-#include <comdef.h>
-#include <Wbemidl.h>
-#include <iostream>
+#include "Mboard.h"                 // Include custom header file Mboard.h
+#include <windows.h>                // Include Windows header file
+#include <comdef.h>                 // Include COM definitions header file
+#include <Wbemidl.h>                // Include WMI (Windows Management Instrumentation) header file
+#include <iostream>                 // Include standard input/output stream
 
-#pragma comment(lib, "wbemuuid.lib")
+#pragma comment(lib, "wbemuuid.lib") // Link with WMI UUID library
 
 Mboard::Mboard() : manufacturer(""), model(""), chipset(""), bios_version("") {}
 
 void Mboard::CollectInfo() {
     HRESULT hres;
 
-    // Inicializar COM
+    // Initialize COM
     hres = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hres)) {
         std::cerr << "Failed to initialize COM library. Error code = 0x"
@@ -19,7 +19,7 @@ void Mboard::CollectInfo() {
         return;
     }
 
-    // Establecer la seguridad general
+    // Set general security levels
     hres = CoInitializeSecurity(
         NULL,
         -1,                          // COM authentication
@@ -39,7 +39,7 @@ void Mboard::CollectInfo() {
         return;
     }
 
-    // Obtener el manejador del servicio WMI
+    // Obtain WMI service locator
     IWbemLocator* pLoc = NULL;
 
     hres = CoCreateInstance(
@@ -57,7 +57,7 @@ void Mboard::CollectInfo() {
 
     IWbemServices* pSvc = NULL;
 
-    // Conectar al namespace WMI
+    // Connect to WMI namespace
     hres = pLoc->ConnectServer(
         _bstr_t(L"ROOT\\CIMV2"), // Namespace
         NULL,                    // User
@@ -77,7 +77,7 @@ void Mboard::CollectInfo() {
         return;
     }
 
-    // Establecer los niveles de seguridad para la conexión
+    // Set security levels for the connection
     hres = CoSetProxyBlanket(
         pSvc,                        // the proxy to set
         RPC_C_AUTHN_WINNT,           // authentication service
@@ -98,7 +98,7 @@ void Mboard::CollectInfo() {
         return;
     }
 
-    // Consultar la información de la placa base
+    // Query motherboard information
     IEnumWbemClassObject* pEnumerator = NULL;
     hres = pSvc->ExecQuery(
         bstr_t("WQL"),
@@ -128,22 +128,22 @@ void Mboard::CollectInfo() {
 
         VARIANT vtProp;
 
-        // Obtener el fabricante
+        // Get manufacturer
         hr = pclsObj->Get(L"Manufacturer", 0, &vtProp, 0, 0);
         manufacturer = _bstr_t(vtProp.bstrVal);
         VariantClear(&vtProp);
 
-        // Obtener el modelo
+        // Get model
         hr = pclsObj->Get(L"Product", 0, &vtProp, 0, 0);
         model = _bstr_t(vtProp.bstrVal);
         VariantClear(&vtProp);
 
-        // Obtener la versión del BIOS
+        // Get BIOS version
         hr = pclsObj->Get(L"Version", 0, &vtProp, 0, 0);
         bios_version = _bstr_t(vtProp.bstrVal);
         VariantClear(&vtProp);
 
-        // Obtener el chipset (no siempre disponible directamente)
+        // Get chipset (not always directly available)
         hr = pclsObj->Get(L"Description", 0, &vtProp, 0, 0);
         chipset = _bstr_t(vtProp.bstrVal);
         VariantClear(&vtProp);
