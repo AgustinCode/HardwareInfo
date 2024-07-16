@@ -6,20 +6,20 @@
 class Memory {
 private:
     std::string type;  // DDR3, DDR4, etc.
-    int total_size;    // en MB
-    int speed;         // en MHz
+    int total_size;    //  MB
+    int speed;         //  MHz
     int slots_used;
 
 public:
     Memory(); // Constructor
 
-    // Métodos
+    // MÃ©todos
     void CollectInfo();
     std::string getType() const;
     int getTotalSize() const;
     int getSpeed() const;
     int getSlotsUsed() const;
-    void printInfo() const; // Para depuración
+    void printInfo() const; // For depuration
 };
 
 #endif // MEMORY_H
