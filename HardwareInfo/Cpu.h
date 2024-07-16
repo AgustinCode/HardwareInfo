@@ -15,7 +15,7 @@ private:
 public:
     Cpu(); // Constructor
 
-    // Métodos
+    // MÃ©todos
     void CollectInfo();
     std::string getBrand() const;
     std::string getModel() const;
@@ -23,7 +23,7 @@ public:
     int getThreads() const;
     double getClockSpeed() const;
 
-    void printInfo() const; // Para depuración
+    void printInfo() const; // For depuration
 
 };
 
