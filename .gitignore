@@ -1,0 +1,20 @@
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+Debug/
+Release/
+*.exe
+*.pdb
+*.log
+*.obj
+*.idb
+*.ilk
+*.dll
+*.lib
+*.exp
+*.ipch
+*.sdf
+*.opensdf
+*.tlog
+*.lastbuildstate
