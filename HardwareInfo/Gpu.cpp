@@ -1,30 +1,30 @@
-#include "Gpu.h"
-#include <windows.h>
-#include <d3d11.h>
-#include <dxgi.h>
-#include <comdef.h>
-#include <Wbemidl.h>
-#include <iostream>
-#include <vector>
+#include "Gpu.h"                    // Include custom header file Gpu.h
+#include <windows.h>                // Include Windows header file
+#include <d3d11.h>                  // Include Direct3D 11 header file
+#include <dxgi.h>                   // Include DXGI header file
+#include <comdef.h>                 // Include COM definitions header file
+#include <Wbemidl.h>                // Include WMI (Windows Management Instrumentation) header file
+#include <iostream>                 // Include standard input/output stream
+#include <vector>                   // Include vector header file (though not used in this code)
 
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "wbemuuid.lib")
+#pragma comment(lib, "d3d11.lib")   // Link with Direct3D 11 library
+#pragma comment(lib, "dxgi.lib")    // Link with DXGI library
+#pragma comment(lib, "wbemuuid.lib")// Link with WMI UUID library
 
-Gpu::Gpu() : brand(""), model(""), vram(0), clock_speed(0.0) {}
+Gpu::Gpu() : brand(""), model(""), vram(0), clock_speed(0.0) {}  // Constructor initializes member variables
 
 void Gpu::CollectInfo() {
     HRESULT hres;
 
-    // Inicializar COM
-    hres = CoInitializeEx(0, COINIT_MULTITHREADED);
+    // Initialize COM
+    hres = CoInitializeEx(0, COINIT_MULTITHREADED);   // Initialize COM with multithreaded concurrency model
     if (FAILED(hres)) {
         std::cerr << "Failed to initialize COM library. Error code = 0x"
             << std::hex << hres << std::endl;
         return;
     }
 
-    // Establecer la seguridad general
+    // Set general security levels
     hres = CoInitializeSecurity(
         NULL,
         -1,                          // COM authentication
@@ -44,7 +44,7 @@ void Gpu::CollectInfo() {
         return;
     }
 
-    // Obtener el manejador del servicio WMI
+    // Obtain WMI service locator
     IWbemLocator* pLoc = NULL;
 
     hres = CoCreateInstance(
@@ -62,7 +62,7 @@ void Gpu::CollectInfo() {
 
     IWbemServices* pSvc = NULL;
 
-    // Conectar al namespace WMI
+    // Connect to WMI namespace
     hres = pLoc->ConnectServer(
         _bstr_t(L"ROOT\\CIMV2"), // Namespace
         NULL,                    // User
@@ -82,7 +82,7 @@ void Gpu::CollectInfo() {
         return;
     }
 
-    // Establecer los niveles de seguridad para la conexión
+    // Set security levels for the connection
     hres = CoSetProxyBlanket(
         pSvc,                        // the proxy to set
         RPC_C_AUTHN_WINNT,           // authentication service
@@ -103,7 +103,7 @@ void Gpu::CollectInfo() {
         return;
     }
 
-    // Consultar la información de la GPU
+    // Query GPU information
     IEnumWbemClassObject* pEnumerator = NULL;
     hres = pSvc->ExecQuery(
         bstr_t("WQL"),
@@ -133,7 +133,7 @@ void Gpu::CollectInfo() {
 
         VARIANT vtProp;
 
-        // Obtener la marca de la GPU
+        // Get GPU brand
         hr = pclsObj->Get(L"AdapterCompatibility", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && (vtProp.vt == VT_BSTR)) {
             char buffer[256];
@@ -143,7 +143,7 @@ void Gpu::CollectInfo() {
         }
         VariantClear(&vtProp);
 
-        // Obtener el nombre de la GPU (que generalmente incluye el modelo)
+        // Get GPU name (usually includes model)
         hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && (vtProp.vt == VT_BSTR)) {
             char buffer[256];
@@ -153,17 +153,17 @@ void Gpu::CollectInfo() {
         }
         VariantClear(&vtProp);
 
-        // Obtener la cantidad de VRAM
+        // Get VRAM size
         hr = pclsObj->Get(L"AdapterRAM", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && (vtProp.vt == VT_UI4)) {
-            vram = vtProp.uintVal / (1024 * 1024); // Convertir de bytes a MB
+            vram = vtProp.uintVal / (1024 * 1024); // Convert from bytes to MB
         }
         VariantClear(&vtProp);
 
-        // Obtener la velocidad del reloj
+        // Get clock speed
         hr = pclsObj->Get(L"CurrentClockSpeed", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && (vtProp.vt == VT_UI4)) {
-            clock_speed = vtProp.uintVal; // en MHz
+            clock_speed = vtProp.uintVal; // in MHz
         }
         VariantClear(&vtProp);
 
