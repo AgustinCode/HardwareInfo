@@ -8,20 +8,20 @@ private:
 
     std::string type;  // HDD, SSD, etc.
     std::string model;
-    double capacity;   // en GB
-    double free_space; // en GB
+    double capacity;   //  GB
+    double free_space; //  GB
 
 public:
 
     Disk(); // Constructor
 
-    // Métodos
+    // MÃ©todos
     void CollectInfo();
     std::string getType() const;
     std::string getModel() const;
     double getCapacity() const;
     double getFreeSpace() const;
-    void printInfo() const; // Para depuración
+    void printInfo() const; // For depuration
 };
 
 #endif // DISK_H
