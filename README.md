@@ -1,7 +1,7 @@
 # HardwareInfo
 
-**PROJECT THAT MADE ME HATE C++**
-
+**PROJECT THAT MADE ME HATE C++***
+s
 ## Overview
 
 HardwareInfo is a comprehensive project that collects and displays detailed information about your computer's hardware components, such as the CPU, GPU, memory, disk, and motherboard. The information is gathered using Windows Management Instrumentation (WMI) and DirectX.
