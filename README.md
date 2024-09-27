@@ -1,6 +1,6 @@
 # HardwareInfo
 
-**PROJECT THAT MADE ME HATE C++**
+**PROJECT THAT MADE ME HATE C++**x
 
 ## Overview
 
